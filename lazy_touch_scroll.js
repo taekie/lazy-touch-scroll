@@ -130,27 +130,28 @@ function pgdn() {
 	var last_y = window.pageYOffset;
 	var y = window.pageYOffset + window.innerHeight - 20;
 
-
 	//when paging down, show me the whole image not cutting in the middle of it
-	var big_images = document.getElementsByTagName('img');
-	for (var i = 0; i < big_images.length; i++) {
-		var img_posy = findPosY(big_images[i]);
-		if (img_posy < y && img_posy + parseInt(big_images[i].height) / 10 * 9 > y) {
-			var img_posx = findPosX(big_images[i]);
+	var big_images=document.getElementsByTagName('img');
+	for(var i=0;i<big_images.length;i++){
+		var img_posy=findPosY(big_images[i]);
+		if(img_posy<y && img_posy+parseInt(big_images[i].height)-20>y) {
+			var img_posx=findPosX(big_images[i]);
 			//when the page is zoomed ignore the images outside of the view.
-			if (img_posx >= window.pageXOffset && img_posx + big_images[i].width <= window.pageXOffset + document.documentElement.clientWidth) {
-				y = img_posy - 10;
+			if(img_posx>=window.pageXOffset && img_posx+big_images[i].width<=window.pageXOffset+document.documentElement.clientWidth){
+				y=img_posy-10;
 				//when the image is big, scroll to the bottom of it.
-				if (last_y >= y) {
-					y = img_posy + big_images[i].height - window.innerHeight;
+				if(y<=last_y+10) {
+					y=window.pageYOffset+window.innerHeight -20;
+					y2=img_posy+big_images[i].height-window.innerHeight;
 					//but when the image is too big, just page down.
-					if (big_images[i].height > window.innerHeight * 2) y = window.pageYOffset + window.innerHeight - 20;
+					if(y2-last_y<window.innerHeight && y2>last_y+10) y=y2; 
 				}
-
+				
 				break;
 			}
 		}
 	}
+
 
 	window.scrollTo(window.pageXOffset, y);
 
