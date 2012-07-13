@@ -4,8 +4,6 @@ Lazy Touch Scroll on touch screen.
 original UI design by taekie (taekie@twitter.com) 
 
 */
-
-
 var scroll_ratio = 4;
 var track_border = 40;
 
@@ -57,8 +55,8 @@ function scroll_touch_started(event) {
 	//for exceptional button
 	if (target_obj.className.match("closebutton")) return;
 
-// touch scroll area is both side of window. [track_border]
-// but the top and bottom area is exceptional. there could be some buttons.
+	// touch scroll area is both side of window. [track_border]
+	// but the top and bottom area is exceptional. there could be some buttons.
 	if (touch.screenY > 50 && touch.screenY < document.body.scrollHeight - 50 && (touch.clientX < track_border * zoom_ratio || touch.clientX > window.innerWidth - track_border * zoom_ratio)) {
 		clicked = true;
 		event.preventDefault();
@@ -77,7 +75,7 @@ function scroll_touch_moved(event) {
 
 	y = window.pageYOffset + (touch.clientY - last_cy) * scroll_ratio * zoom_ratio;
 
-//scrollbar mode. touch scroll area(both sides) and slide away and scroll up or down keeping your finger on screen.
+	//scrollbar mode. touch scroll area(both sides) and slide away and scroll up or down keeping your finger on screen.
 	dx = Math.abs(touch.clientX - touch_cx);
 	if (dx > 100) {
 		y = (touch.clientY - 50) / (window.innerHeight - 50) * document.body.scrollHeight;
@@ -106,7 +104,7 @@ function scroll_touch_ended(event) {
 	if (Math.abs(last_cy - touch_cy) < 1) {
 		lasty = lasty - window.pageYOffset;
 
-// page up/down area is 30/70. because page down is more often action.
+		// page up/down area is 30/70. because page down is more often action.
 		if (last_cy < window.innerHeight * 0.3) pgup();
 		else if (last_cy < window.innerHeight - 40) pgdn();
 		else pgend();
@@ -128,30 +126,27 @@ var last_big_image = 0;
 
 function pgdn() {
 	var last_y = window.pageYOffset;
-	var y = window.pageYOffset + window.innerHeight - 20;
+	var y = last_y + window.innerHeight - 20;
 
 	//when paging down, show me the whole image not cutting in the middle of it
-	var big_images=document.getElementsByTagName('img');
-	for(var i=0;i<big_images.length;i++){
-		var img_posy=findPosY(big_images[i]);
-		if(img_posy<y && img_posy+parseInt(big_images[i].height)-20>y) {
-			var img_posx=findPosX(big_images[i]);
-			//when the page is zoomed ignore the images outside of the view.
-			if(img_posx>=window.pageXOffset && img_posx+big_images[i].width<=window.pageXOffset+document.documentElement.clientWidth){
-				y=img_posy-10;
+	var big_images = document.getElementsByTagName('img');
+	for (var i = 0; i < big_images.length; i++) {
+		var img_posy = findPosY(big_images[i]);
+		if (img_posy < y && y < img_posy + parseInt(big_images[i].height)) {
+			var img_posx = findPosX(big_images[i]);
+			//when the image is the view.
+			if (img_posx >= window.pageXOffset && img_posx + big_images[i].width <= window.pageXOffset + document.documentElement.clientWidth) {
+				//scroll to align top of the image
+				y2 = img_posy - 10;
 				//when the image is big, scroll to the bottom of it.
-				if(y<=last_y+10) {
-					y=window.pageYOffset+window.innerHeight -20;
-					y2=img_posy+big_images[i].height-window.innerHeight;
-					//but when the image is too big, just page down.
-					if(y2-last_y<window.innerHeight && y2>last_y+10) y=y2; 
+				if (y2 <= last_y) y2 = img_posy + big_images[i].height - window.innerHeight;
+				if (y2 < last_y + window.innerHeight && y2 > last_y + 10) {
+					y = y2;
+					break;
 				}
-				
-				break;
 			}
 		}
 	}
-
 
 	window.scrollTo(window.pageXOffset, y);
 
